@@ -5,35 +5,25 @@
     reason = "mem::forget is generally not safe to do with esp_hal types, especially those \
     holding buffers for the duration of a data transfer."
 )]
-#![deny(clippy::large_stack_frames)]
 
+use embassy_executor::Spawner;
 use esp_hal::delay::Delay;
 use esp_hal::gpio::{Input, InputConfig, Pull};
 use esp_hal::rmt::Rmt;
 use esp_hal::time::Rate;
-use esp_hal::tsens::{Temperature, TemperatureSensor};
+use esp_hal::tsens::TemperatureSensor;
 use esp_hal::{main, tsens};
 use esp_hal_smartled::{RmtSmartLeds, Ws2812Timing, buffer_size, color_order};
 use esp_println::println;
 use smart_leds::hsv::{Hsv, hsv2rgb};
 use smart_leds::{RGB8, SmartLedsWrite, brightness, gamma};
 
-#[panic_handler]
-fn panic(panic_info: &core::panic::PanicInfo) -> ! {
-    println!("PANICKED: {panic_info}");
-    loop {}
-}
-
 esp_bootloader_esp_idf::esp_app_desc!();
 
-#[allow(
-    clippy::large_stack_frames,
-    reason = "it's not unusual to allocate larger buffers etc. in main"
-)]
-#[main]
-fn main() -> ! {
-    let config = esp_hal::Config::default();
-    let peripherals = esp_hal::init(config);
+
+#[esp_rtos::main]
+async fn main(spawner: Spawner) {
+    let peripherals = esp_hal::init(esp_hal::Config::default());
 
     let rmt = Rmt::new(peripherals.RMT, Rate::from_mhz(80)).unwrap();
     type LedColor = RGB8;
@@ -77,4 +67,10 @@ fn main() -> ! {
         );
         delay.delay_millis(100);
     }
+}
+
+#[panic_handler]
+fn panic(panic_info: &core::panic::PanicInfo) -> ! {
+    println!("PANICKED: {panic_info}");
+    loop {}
 }

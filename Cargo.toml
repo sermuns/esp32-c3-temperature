@@ -6,10 +6,16 @@ version      = "0.1.0"
 
 [dependencies]
 critical-section = "1.2.0"
+dotenvy_macro = "0.15.7"
+embassy-executor = "0.9.1"
+embassy-net = { version = "0.8.0", features = ["tcp", "proto-ipv4", "dhcpv4"] }
+embassy-time = "0.5.0"
 esp-bootloader-esp-idf = { version = "0.4.0", features = ["esp32c3"] }
 esp-hal = { version = "~1.0", features = ["esp32c3", "unstable"] }
 esp-hal-smartled2 = { version = "0.28", features = ["esp32c3"] }
 esp-println = { version = "0.16.1", features = ["esp32c3"] }
+esp-rtos = { version = "0.2.0", features = ["embassy", "esp32c3"] }
+picoserve = "0.17.1"
 smart-leds = "0.4.0"
 
 
